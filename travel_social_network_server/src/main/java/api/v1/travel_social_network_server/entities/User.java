@@ -57,8 +57,11 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private RoleEnum role;
 
-    @Column(name = "avatar")
-    private String avatar;
+    @Column(name = "avatar_img")
+    private String avatarImg;
+
+    @Column(name = "cover_img")
+    private String coverImg;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
