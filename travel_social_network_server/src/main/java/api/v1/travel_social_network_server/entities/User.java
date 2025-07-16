@@ -4,6 +4,7 @@ import api.v1.travel_social_network_server.utilities.RoleEnum;
 import api.v1.travel_social_network_server.utilities.StatusEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -35,12 +36,12 @@ public class User implements UserDetails {
     @Id
     @Column(name = "user_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private UUID userId;
 
     @Size(max = 255)
     @NotNull
     @Column(name = "user_name", nullable = false)
-    private String username;
+    private String userName;
 
     @Size(max = 255)
     @NotNull
@@ -81,9 +82,13 @@ public class User implements UserDetails {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name().toUpperCase()));
     }
 
+    @JsonManagedReference
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private UserProfile userProfile;
+
     @Override
     public String getUsername() {
-        return this.username;
+        return this.userName;
     }
 
     @Override

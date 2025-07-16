@@ -12,6 +12,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @SuperBuilder
 public class RegisterResponse {
-    private String username;
+    private String userName;
     private String email;
 }

@@ -34,7 +34,7 @@ public class JwtGenerator {
         return JWT.create()
                 .withSubject(user.getEmail())
                 .withClaim("roles", roles)
-                .withClaim("userId", String.valueOf(user.getId()))
+                .withClaim("userId", String.valueOf(user.getUserId()))
                 .withExpiresAt(new Date(System.currentTimeMillis() + 864000000)) // Expires in 10 days
                 .sign(Algorithm.HMAC256(secretKey));
     }

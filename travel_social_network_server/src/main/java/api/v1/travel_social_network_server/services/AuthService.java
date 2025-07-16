@@ -4,10 +4,12 @@ import api.v1.travel_social_network_server.components.JwtGenerator;
 import api.v1.travel_social_network_server.dto.auth.LoginDto;
 import api.v1.travel_social_network_server.dto.auth.RegisterDto;
 import api.v1.travel_social_network_server.entities.User;
+import api.v1.travel_social_network_server.entities.UserProfile;
 import api.v1.travel_social_network_server.exceptions.ResourceAlreadyExisted;
 import api.v1.travel_social_network_server.reponses.auth.LoginResponse;
 import api.v1.travel_social_network_server.reponses.auth.RegisterResponse;
 import api.v1.travel_social_network_server.responsitories.UserRepository;
+import api.v1.travel_social_network_server.utilities.GenderEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -30,18 +32,28 @@ public class AuthService {
             throw new ResourceAlreadyExisted("User already existed with this email");
         }
 
+        UserProfile userProfile = UserProfile.builder()
+                .firstName(registerDto.getFirstName())
+                .lastName(registerDto.getLastName())
+                .dateOfBirth(registerDto.getDateOfBirth())
+                .gender(registerDto.getGender().toLowerCase().trim().equals("male") ? registerDto.getGender().toLowerCase().trim().equals("female") ? GenderEnum.FEMALE : GenderEnum.MALE : GenderEnum.MALE)
+                .build();
+
         User user = User.builder()
-                .username(registerDto.getUsername())
+                .userName(registerDto.getUserName())
                 .email(registerDto.getEmail())
                 .password(passwordEncoder.encode(registerDto.getPassword()))
+                .userProfile(userProfile)
                 .build();
+
+        userProfile.setUser(user);  // Quan trọng: ánh xạ ngược
 
         System.out.println(user);
 
         userRepository.save(user);
 
         return RegisterResponse.builder()
-                .username(user.getUsername())
+                .userName(user.getUsername())
                 .email(user.getEmail())
                 .build();
     }
@@ -55,10 +67,14 @@ public class AuthService {
         String jwtToken = authenticateUser(loginDto, user);
 
         return LoginResponse.builder()
-                .username(user.getUsername())
+                .userId(user.getUserId())
+                .userName(user.getUsername())
+                .avatarImg(user.getAvatarImg())
+                .coverImg(user.getCoverImg())
                 .email(user.getEmail())
                 .token(jwtToken)
                 .role(user.getRole().name())
+                .userProfile(user.getUserProfile())
                 .build();
     }
 

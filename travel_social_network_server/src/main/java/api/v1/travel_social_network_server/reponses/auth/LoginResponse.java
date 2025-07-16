@@ -1,9 +1,8 @@
 package api.v1.travel_social_network_server.reponses.auth;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import api.v1.travel_social_network_server.entities.UserProfile;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
 @Getter
@@ -12,10 +11,12 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class LoginResponse {
-    private UUID id;
-    private String username;
+    private UUID userId;
+    private String userName;
     private String email;
     private String token;
-    private String avatar;
+    private String avatarImg;
+    private String coverImg;
     private String role;
+    private UserProfile userProfile;
 }
