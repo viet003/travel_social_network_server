@@ -21,7 +21,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @EnableWebSecurity
 @EnableWebMvc
 @EnableMethodSecurity
-@EnableJpaAuditing
 public class WebSecurityConfig {
     @Value("${api.base-url}")
     private String apiBaseURL;

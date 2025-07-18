@@ -5,7 +5,8 @@ import api.v1.travel_social_network_server.dto.auth.LoginDto;
 import api.v1.travel_social_network_server.dto.auth.RegisterDto;
 import api.v1.travel_social_network_server.entities.User;
 import api.v1.travel_social_network_server.entities.UserProfile;
-import api.v1.travel_social_network_server.exceptions.ResourceAlreadyExisted;
+import api.v1.travel_social_network_server.exceptions.ResourceAlreadyExistedException;
+import api.v1.travel_social_network_server.exceptions.ResourceNotFoundException;
 import api.v1.travel_social_network_server.reponses.auth.LoginResponse;
 import api.v1.travel_social_network_server.reponses.auth.RegisterResponse;
 import api.v1.travel_social_network_server.responsitories.UserRepository;
@@ -29,14 +30,24 @@ public class AuthService {
     @Transactional
     public RegisterResponse registerService(RegisterDto registerDto) {
         if (userRepository.existsByEmail(registerDto.getEmail())) {
-            throw new ResourceAlreadyExisted("User already existed with this email");
+            throw new ResourceAlreadyExistedException("User already existed with this email");
         }
+
+        String genderInput = registerDto.getGender() != null
+                ? registerDto.getGender().toLowerCase().trim()
+                : "";
+
+        GenderEnum gender = switch (genderInput) {
+            case "male" -> GenderEnum.MALE;
+            case "female" -> GenderEnum.FEMALE;
+            default -> GenderEnum.OTHER;
+        };
 
         UserProfile userProfile = UserProfile.builder()
                 .firstName(registerDto.getFirstName())
                 .lastName(registerDto.getLastName())
                 .dateOfBirth(registerDto.getDateOfBirth())
-                .gender(registerDto.getGender().toLowerCase().trim().equals("male") ? registerDto.getGender().toLowerCase().trim().equals("female") ? GenderEnum.FEMALE : GenderEnum.MALE : GenderEnum.MALE)
+                .gender(gender)
                 .build();
 
         User user = User.builder()
@@ -61,7 +72,7 @@ public class AuthService {
     @Transactional
     public LoginResponse loginService(LoginDto loginDto) {
         User user = userRepository.findByEmail(loginDto.getEmail())
-                .orElseThrow(() -> new BadCredentialsException("User not existed"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not existed"));
 
 
         String jwtToken = authenticateUser(loginDto, user);
@@ -81,7 +92,7 @@ public class AuthService {
 
     private String authenticateUser(LoginDto loginDto, User user) {
         if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
-            throw new BadCredentialsException("Invalid password");
+            throw new ResourceNotFoundException("Invalid password");
         }
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(

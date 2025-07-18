@@ -4,6 +4,7 @@ import api.v1.travel_social_network_server.dto.user.UpdateUserDto;
 import api.v1.travel_social_network_server.dto.user.UpdateUserImgDto;
 import api.v1.travel_social_network_server.entities.User;
 import api.v1.travel_social_network_server.entities.UserProfile;
+import api.v1.travel_social_network_server.exceptions.ResourceNotFoundException;
 import api.v1.travel_social_network_server.reponses.user.UpdateUserResponse;
 import api.v1.travel_social_network_server.reponses.user.UserResponse;
 import api.v1.travel_social_network_server.responsitories.UserRepository;
@@ -30,18 +31,18 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public User getUserByUsername(String username) {
-        return userRepository.findByUserName(username).orElseThrow(() -> new BadCredentialsException("User not found"));
+        return userRepository.findByUserName(username).orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
     @Transactional(readOnly = true)
     public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(() -> new BadCredentialsException("User not found"));
+        return userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
     @Transactional(readOnly = true)
     public UserResponse getUserProfile(UUID userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BadCredentialsException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
 
         return UserResponse.builder()
@@ -55,18 +56,18 @@ public class UserService {
 
     @Transactional
     public String updateUserImg(UpdateUserImgDto updateUserImgDto, User user) throws IOException {
-        User ex_user = userRepository.findById(user.getUserId()).orElseThrow(() -> new BadCredentialsException("User not found"));
+        User ex_user = userRepository.findById(user.getUserId()).orElseThrow(() -> new ResourceNotFoundException("User not found"));
         String imgUrl = "";
 
         if (updateUserImgDto.getAvatarImg() != null) {
-            imgUrl = cloudinaryService.upload(updateUserImgDto.getAvatarImg().getBytes(), AVATAR_FOLDER);
+            imgUrl = cloudinaryService.uploadFile(updateUserImgDto.getAvatarImg().getBytes(), AVATAR_FOLDER, "image");
             ex_user.setAvatarImg(imgUrl);
             log.info("Avatar url: {}", imgUrl);
             userRepository.save(ex_user);
         }
 
         if (updateUserImgDto.getCoverImg() != null) {
-            imgUrl = cloudinaryService.upload(updateUserImgDto.getCoverImg().getBytes(), COVER_FOLDER);
+            imgUrl = cloudinaryService.uploadFile(updateUserImgDto.getCoverImg().getBytes(), COVER_FOLDER, "image");
             ex_user.setCoverImg(imgUrl);
             log.info("Cover url: {}", imgUrl);
             userRepository.save(ex_user);
@@ -78,7 +79,7 @@ public class UserService {
     @Transactional
     public UpdateUserResponse updateUserProfile(UpdateUserDto updateUserDto, User user) throws IOException {
         User ex_user = userRepository.findById(user.getUserId())
-                .orElseThrow(() -> new BadCredentialsException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         ex_user.setUserName(updateUserDto.getUserName());
 

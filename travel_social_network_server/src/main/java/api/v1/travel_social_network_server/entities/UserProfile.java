@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -43,8 +45,15 @@ public class UserProfile {
     @Column(name = "about", columnDefinition = "TEXT")
     private String about;
 
-    @Column(name = "created_date")
-    private LocalDateTime createdDate;
+    @CreatedDate
+    @Column(name = "created_at")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Column(name = "updated_at")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDateTime updatedAt;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JsonBackReference

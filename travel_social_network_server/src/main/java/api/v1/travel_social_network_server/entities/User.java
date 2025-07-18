@@ -2,6 +2,7 @@ package api.v1.travel_social_network_server.entities;
 
 import api.v1.travel_social_network_server.utilities.RoleEnum;
 import api.v1.travel_social_network_server.utilities.StatusEnum;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -29,33 +30,34 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-@ToString
+@ToString(exclude = {"password", "userProfile", "posts"})
 @JsonIgnoreProperties(ignoreUnknown = true)
-// khi login -> kiểm tra thông tin + trạng thái tài khoản
 public class User implements UserDetails {
+
     @Id
-    @Column(name = "user_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "user_id", nullable = false)
     private UUID userId;
 
-    @Size(max = 255)
     @NotNull
+    @Size(max = 255)
     @Column(name = "user_name", nullable = false)
     private String userName;
 
-    @Size(max = 255)
     @NotNull
-    @Column(name = "email", nullable = false)
+    @Size(max = 255)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Size(max = 255)
+    @JsonIgnore
     @NotNull
+    @Size(max = 255)
     @Column(name = "pass_word", nullable = false)
     private String password;
 
     @NotNull
-    @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
     private RoleEnum role;
 
     @Column(name = "avatar_img")
@@ -64,17 +66,28 @@ public class User implements UserDetails {
     @Column(name = "cover_img")
     private String coverImg;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private StatusEnum status;
 
     @CreatedDate
-    @Column(name = "created_at")
+    @Column(name = "created_at", updatable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime createdAt;
 
     @LastModifiedDate
     @Column(name = "updated_at")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime updatedAt;
+
+    @JsonManagedReference
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private UserProfile userProfile;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Post> posts;
 
     @Override
     @JsonIgnore
@@ -82,43 +95,38 @@ public class User implements UserDetails {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name().toUpperCase()));
     }
 
-    @JsonManagedReference
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private UserProfile userProfile;
-
     @Override
     public String getUsername() {
         return this.userName;
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonExpired() {
-        return UserDetails.super.isAccountNonExpired();
+        return this.status == StatusEnum.ACTIVE;
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonLocked() {
-        return UserDetails.super.isAccountNonLocked();
+        return this.status != StatusEnum.INACTIVE;
     }
 
     @Override
+    @JsonIgnore
     public boolean isCredentialsNonExpired() {
-        return UserDetails.super.isCredentialsNonExpired();
+        return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isEnabled() {
         return this.status == StatusEnum.ACTIVE;
     }
 
     @PrePersist
     public void prePersist() {
-        if (role == null) {
-            role = RoleEnum.USER;
-        }
-
-       if (status == null) {
-           status = StatusEnum.ACTIVE;
-       }
+        if (role == null) role = RoleEnum.USER;
+        if (status == null) status = StatusEnum.ACTIVE;
     }
 }
