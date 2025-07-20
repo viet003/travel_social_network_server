@@ -31,12 +31,11 @@ public class Post {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonBackReference
     private User user;
 
     @Lob
     @NotNull
-    @Column(name = "content", nullable = false)
+    @Column(name = "content", nullable = false, columnDefinition = "TEXT")
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -44,7 +43,7 @@ public class Post {
     @JsonBackReference
     private Post sharedPost;
 
-    @Column(name = "location", length = 255)
+    @Column(name = "location", length = 255, columnDefinition = "nvarchar(255)")
     private String location;
 
     @Column(name = "like_count")

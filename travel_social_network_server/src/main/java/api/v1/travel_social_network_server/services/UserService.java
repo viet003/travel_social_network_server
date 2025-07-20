@@ -55,37 +55,43 @@ public class UserService {
 
 
     @Transactional
-    public String updateUserImg(UpdateUserImgDto updateUserImgDto, User user) throws IOException {
-        User ex_user = userRepository.findById(user.getUserId()).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    public UserResponse updateUserImg(UpdateUserImgDto updateUserImgDto, User user) throws IOException {
+        User exUser = userRepository.findById(user.getUserId()).orElseThrow(() -> new ResourceNotFoundException("User not found"));
         String imgUrl = "";
+        User userUpdate = null;
 
         if (updateUserImgDto.getAvatarImg() != null) {
             imgUrl = cloudinaryService.uploadFile(updateUserImgDto.getAvatarImg().getBytes(), AVATAR_FOLDER, "image");
-            ex_user.setAvatarImg(imgUrl);
+            exUser.setAvatarImg(imgUrl);
             log.info("Avatar url: {}", imgUrl);
-            userRepository.save(ex_user);
+            userUpdate = userRepository.save(exUser);
         }
 
         if (updateUserImgDto.getCoverImg() != null) {
             imgUrl = cloudinaryService.uploadFile(updateUserImgDto.getCoverImg().getBytes(), COVER_FOLDER, "image");
-            ex_user.setCoverImg(imgUrl);
+            exUser.setCoverImg(imgUrl);
             log.info("Cover url: {}", imgUrl);
-            userRepository.save(ex_user);
+            userUpdate = userRepository.save(exUser);
         }
 
-        return imgUrl;
+        return UserResponse.builder()
+                .userName(userUpdate.getUsername())
+                .userProfile(userUpdate.getUserProfile())
+                .avatarImg(userUpdate.getAvatarImg())
+                .coverImg(userUpdate.getCoverImg())
+                .build();
     }
 
     @Transactional
     public UpdateUserResponse updateUserProfile(UpdateUserDto updateUserDto, User user) throws IOException {
-        User ex_user = userRepository.findById(user.getUserId())
+        User exUser = userRepository.findById(user.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        ex_user.setUserName(updateUserDto.getUserName());
+        exUser.setUserName(updateUserDto.getUserName());
 
         System.out.println(updateUserDto);
 
-        UserProfile profile = ex_user.getUserProfile();
+        UserProfile profile = exUser.getUserProfile();
         profile.setFirstName(updateUserDto.getFirstName());
         profile.setLastName(updateUserDto.getLastName());
         profile.setDateOfBirth(updateUserDto.getDateOfBirth());
@@ -99,12 +105,12 @@ public class UserService {
             default -> profile.setGender(GenderEnum.OTHER);
         }
 
-        ex_user.setUserProfile(profile);
-        userRepository.save(ex_user);
+        exUser.setUserProfile(profile);
+        User userUpdate = userRepository.save(exUser);
 
-        return UpdateUserResponse.builder()
-                .userName(ex_user.getUsername())
-                .userProfile(profile)
+        return UserResponse.builder()
+                .userName(userUpdate.getUsername())
+                .userProfile(userUpdate.getUserProfile())
                 .build();
     }
 

@@ -2,10 +2,7 @@ package api.v1.travel_social_network_server.entities;
 
 import api.v1.travel_social_network_server.utilities.RoleEnum;
 import api.v1.travel_social_network_server.utilities.StatusEnum;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -49,15 +46,16 @@ public class User implements UserDetails {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @JsonIgnore
     @NotNull
     @Size(max = 255)
+    @JsonIgnore
     @Column(name = "pass_word", nullable = false)
     private String password;
 
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
+    @JsonIgnore
     private RoleEnum role;
 
     @Column(name = "avatar_img")
@@ -69,6 +67,7 @@ public class User implements UserDetails {
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
+    @JsonIgnore
     private StatusEnum status;
 
     @CreatedDate
@@ -85,8 +84,8 @@ public class User implements UserDetails {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private UserProfile userProfile;
 
-    @JsonManagedReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Post> posts;
 
     @Override

@@ -43,12 +43,12 @@ public class UserController {
             @AuthenticationPrincipal User user,
             @ModelAttribute UpdateUserImgDto updateUserImgDto
     ) throws IOException {
-        String imgUrl = userService.updateUserImg(updateUserImgDto, user);
+        UserResponse userUpdate = userService.updateUserImg(updateUserImgDto, user);
 
         return ResponseEntity.ok(
                 Response.builder()
                         .status(StatusRequestEnum.SUCCESS)
-                        .data(imgUrl)
+                        .data(userUpdate)
                         .message("Update successfully")
                         .build()
         );

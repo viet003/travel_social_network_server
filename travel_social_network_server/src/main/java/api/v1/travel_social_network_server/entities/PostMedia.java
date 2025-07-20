@@ -37,12 +37,9 @@ public class PostMedia {
     @Column(name = "type", nullable = false)
     private MediaTypeEnum type;
 
-    @Column(name = "position")
-    private Integer position;
-
     @CreatedDate
     @Column(name = "uploaded_at", updatable = false)
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDateTime uploadedAt;
+    private LocalDateTime createdAt;
     
 }
