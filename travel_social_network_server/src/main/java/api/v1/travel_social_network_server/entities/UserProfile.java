@@ -32,7 +32,7 @@ public class UserProfile {
     @Column(name = "last_name", length = 45, columnDefinition = "nvarchar(255)")
     private String lastName;
 
-    @Column(name = "location", length = 255)
+    @Column(name = "location", length = 255, columnDefinition = "nvarchar(255)")
     private String location;
 
     @Column(name = "gender", length = 10)

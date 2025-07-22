@@ -1,12 +1,13 @@
 package api.v1.travel_social_network_server.controllers;
 
+import api.v1.travel_social_network_server.dto.comment.UpdateCommentDto;
 import api.v1.travel_social_network_server.dto.post.UpdatePostDto;
 import api.v1.travel_social_network_server.entities.Post;
 import api.v1.travel_social_network_server.entities.User;
 import api.v1.travel_social_network_server.reponses.PageableResponse;
 import api.v1.travel_social_network_server.reponses.Response;
 import api.v1.travel_social_network_server.reponses.comment.CommentResponse;
-import api.v1.travel_social_network_server.services.PostService;
+import api.v1.travel_social_network_server.services.CommentService;
 import api.v1.travel_social_network_server.utilities.PostStatusEnum;
 import api.v1.travel_social_network_server.utilities.StatusRequestEnum;
 import lombok.RequiredArgsConstructor;
@@ -18,34 +19,27 @@ import java.io.IOException;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("${api.base-url}")
+@RequestMapping("${api.base-url}/comment")
 @RequiredArgsConstructor
-public class PostController {
+public class CommentController {
 
-    private final PostService postService;
+    private final CommentService commentService;
 
-    @GetMapping("/post/{userId}")
-    public ResponseEntity<Response<?>> getPostsByUser(
-            @PathVariable UUID userId,
+    @GetMapping("/{postId}")
+    public ResponseEntity<Response<?>> getCommentsByPost(
+            @PathVariable Long postId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
             @AuthenticationPrincipal User currentUser
     ) {
         try {
-            PageableResponse<?> postPage = null;
-            if (currentUser != null && currentUser.getUserId().equals(userId)) {
-                postPage = postService.getPostsByUser(currentUser, page, size);
-            } else {
-                User user = new User();
-                user.setUserId(userId);
-                postPage = postService.getPostsByStatusAndUser(PostStatusEnum.PUBLIC, user, page, size);
-            }
+            PageableResponse<?> postPage = commentService.getCommentsByPost(postId, page, size);
 
             return ResponseEntity.ok(
                     Response.builder()
                             .status(StatusRequestEnum.SUCCESS)
                             .data(postPage)
-                            .message("Search post successfully.")
+                            .message("Search comment successfully.")
                             .build()
             );
         } catch (Exception e) {
@@ -56,41 +50,18 @@ public class PostController {
         }
     }
 
-    @GetMapping("/post")
-    public ResponseEntity<Response<?>> getPostsByStatus(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size
-    ) {
-        try {
-            PageableResponse<?> postPage = postService.getPostsByStatus(PostStatusEnum.PUBLIC, page, size);
-
-            return ResponseEntity.ok(
-                    Response.builder()
-                            .status(StatusRequestEnum.SUCCESS)
-                            .data(postPage)
-                            .message("Search post successfully.")
-                            .build()
-            );
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Response.<CommentResponse>builder()
-                    .status(StatusRequestEnum.FAIL)
-                    .message(e.getMessage())
-                    .build());
-        }
-    }
-
-    @PostMapping(value = "/post", consumes = "multipart/form-data")
-    public ResponseEntity<Response<?>> createPost(
+    @PostMapping()
+    public ResponseEntity<Response<?>> createComment(
             @AuthenticationPrincipal User user,
-            @ModelAttribute UpdatePostDto updatePostDto
+            @RequestBody UpdateCommentDto updateCommentDto
     ) throws IOException {
         try {
-            Post post = postService.createPost(user, updatePostDto);
+            CommentResponse comment = commentService.createComment(user, updateCommentDto);
 
             return ResponseEntity.ok(
                     Response.builder()
                             .status(StatusRequestEnum.SUCCESS)
-                            .data(post)
+                            .data(comment)
                             .message("Post successfully created.")
                             .build()
             );
@@ -101,4 +72,5 @@ public class PostController {
                     .build());
         }
     }
+
 }

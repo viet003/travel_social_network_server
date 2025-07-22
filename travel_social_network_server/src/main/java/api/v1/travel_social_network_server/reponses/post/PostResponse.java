@@ -14,27 +14,22 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class PostResponse {
-
     private Long postId;
     private String content;
     private String location;
-
     private String avatarImg;
     private String coverImg;
     private UUID userId;
     private String firstName;
     private String lastName;
-
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createdAt;
-
     private Integer likeCount;
     private Integer commentCount;
     private Integer shareCount;
-
     private List<PostMediaResponse> mediaList;
-
     private List<String> tags;
     private Boolean isShare;
     private PostStatusEnum status;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createdAt;
+    private boolean isLiked;
 }

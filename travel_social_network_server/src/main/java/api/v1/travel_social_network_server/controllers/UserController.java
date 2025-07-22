@@ -26,16 +26,22 @@ public class UserController {
 
     @GetMapping("/{userId}")
     public ResponseEntity<Response<?>> getUserProfile(@PathVariable UUID userId) throws IOException {
+        try {
+            UserResponse userResponse = userService.getUserProfile(userId);
 
-        UserResponse userResponse = userService.getUserProfile(userId);
-
-        return ResponseEntity.ok(
-                Response.<UserResponse>builder()
-                        .data(userResponse)
-                        .status(StatusRequestEnum.SUCCESS)
-                        .message("Get user Profile Successfully")
-                        .build()
-        );
+            return ResponseEntity.ok(
+                    Response.<UserResponse>builder()
+                            .data(userResponse)
+                            .status(StatusRequestEnum.SUCCESS)
+                            .message("Get user Profile Successfully")
+                            .build()
+            );
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Response.<UserResponse>builder()
+                    .status(StatusRequestEnum.FAIL)
+                    .message(e.getMessage())
+                    .build());
+        }
     }
 
     @PostMapping(value = "/img", consumes = "multipart/form-data")
@@ -43,28 +49,41 @@ public class UserController {
             @AuthenticationPrincipal User user,
             @ModelAttribute UpdateUserImgDto updateUserImgDto
     ) throws IOException {
-        UserResponse userUpdate = userService.updateUserImg(updateUserImgDto, user);
+        try {
+            UserResponse userUpdate = userService.updateUserImg(updateUserImgDto, user);
 
-        return ResponseEntity.ok(
-                Response.builder()
-                        .status(StatusRequestEnum.SUCCESS)
-                        .data(userUpdate)
-                        .message("Update successfully")
-                        .build()
-        );
+            return ResponseEntity.ok(
+                    Response.builder()
+                            .status(StatusRequestEnum.SUCCESS)
+                            .data(userUpdate)
+                            .message("Update successfully")
+                            .build()
+            );
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Response.<UserResponse>builder()
+                    .status(StatusRequestEnum.FAIL)
+                    .message(e.getMessage())
+                    .build());
+        }
     }
 
     @PutMapping("/edit-profile")
     public ResponseEntity<Response<?>> updateUserProfile(@RequestBody UpdateUserDto updateUserDto, @AuthenticationPrincipal User user) throws IOException {
+        try {
+            UpdateUserResponse updateUserResponse = userService.updateUserProfile(updateUserDto, user);
 
-        UpdateUserResponse updateUserResponse = userService.updateUserProfile(updateUserDto, user);
-
-        return ResponseEntity.ok(
-                Response.builder()
-                        .status(StatusRequestEnum.SUCCESS)
-                        .data(updateUserResponse)
-                        .message("Update successfully")
-                        .build()
-        );
+            return ResponseEntity.ok(
+                    Response.builder()
+                            .status(StatusRequestEnum.SUCCESS)
+                            .data(updateUserResponse)
+                            .message("Update successfully")
+                            .build()
+            );
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Response.<UserResponse>builder()
+                    .status(StatusRequestEnum.FAIL)
+                    .message(e.getMessage())
+                    .build());
+        }
     }
 }

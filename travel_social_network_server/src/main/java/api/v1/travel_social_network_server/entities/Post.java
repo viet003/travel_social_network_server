@@ -80,6 +80,10 @@ public class Post {
     @JsonManagedReference
     private List<Tag> tags;
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Comment> comments;
+
     @PrePersist
     public void prePersist() {
         if (likeCount == null) likeCount = 0;
