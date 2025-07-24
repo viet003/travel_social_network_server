@@ -1,4 +1,4 @@
-package api.v1.travel_social_network_server.dto.post;
+package api.v1.travel_social_network_server.dtos.post;
 
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;

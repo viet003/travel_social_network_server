@@ -1,4 +1,4 @@
-package api.v1.travel_social_network_server.dto.auth;
+package api.v1.travel_social_network_server.dtos.auth;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.*;

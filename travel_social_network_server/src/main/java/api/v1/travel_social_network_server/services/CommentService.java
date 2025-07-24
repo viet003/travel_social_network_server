@@ -1,6 +1,6 @@
 package api.v1.travel_social_network_server.services;
 
-import api.v1.travel_social_network_server.dto.comment.UpdateCommentDto;
+import api.v1.travel_social_network_server.dtos.comment.UpdateCommentDto;
 import api.v1.travel_social_network_server.entities.Comment;
 import api.v1.travel_social_network_server.entities.Post;
 import api.v1.travel_social_network_server.entities.User;

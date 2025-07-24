@@ -1,4 +1,4 @@
-package api.v1.travel_social_network_server.config;
+package api.v1.travel_social_network_server.configurations;
 
 
 import com.cloudinary.Cloudinary;

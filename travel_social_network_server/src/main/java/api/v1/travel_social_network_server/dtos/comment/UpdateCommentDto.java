@@ -1,8 +1,7 @@
-package api.v1.travel_social_network_server.dto.comment;
+package api.v1.travel_social_network_server.dtos.comment;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import java.util.UUID;
 
 @Getter
 @Setter

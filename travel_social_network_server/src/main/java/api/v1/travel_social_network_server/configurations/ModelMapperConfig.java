@@ -1,4 +1,4 @@
-package api.v1.travel_social_network_server.config;
+package api.v1.travel_social_network_server.configurations;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;

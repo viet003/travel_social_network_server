@@ -1,6 +1,6 @@
 package api.v1.travel_social_network_server.entities;
 
-import api.v1.travel_social_network_server.utilities.PostStatusEnum;
+import api.v1.travel_social_network_server.utilities.PrivacyEnum;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -43,6 +43,11 @@ public class Post {
     @JsonBackReference
     private Post sharedPost;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "group_id")
+    @JsonBackReference
+    private Group group;
+
     @Column(name = "location", length = 255, columnDefinition = "nvarchar(255)")
     private String location;
 
@@ -59,8 +64,8 @@ public class Post {
     private Boolean isShare = false;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private PostStatusEnum status;
+    @Column(name = "privacy", nullable = false)
+    private PrivacyEnum privacy;
 
     @CreatedDate
     @Column(name = "created_at", updatable = false)
@@ -83,6 +88,10 @@ public class Post {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Comment> comments;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Like> likes;
 
     @PrePersist
     public void prePersist() {

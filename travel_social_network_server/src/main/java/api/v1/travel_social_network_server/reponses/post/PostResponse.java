@@ -1,6 +1,8 @@
 package api.v1.travel_social_network_server.reponses.post;
 
-import api.v1.travel_social_network_server.utilities.PostStatusEnum;
+import api.v1.travel_social_network_server.entities.Group;
+import api.v1.travel_social_network_server.reponses.group.GroupResponse;
+import api.v1.travel_social_network_server.utilities.PrivacyEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
@@ -28,7 +30,9 @@ public class PostResponse {
     private List<PostMediaResponse> mediaList;
     private List<String> tags;
     private Boolean isShare;
-    private PostStatusEnum status;
+    private PrivacyEnum privacy;
+    private GroupResponse group;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
     private boolean isLiked;

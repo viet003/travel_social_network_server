@@ -1,7 +1,7 @@
 package api.v1.travel_social_network_server.controllers;
 
-import api.v1.travel_social_network_server.dto.auth.LoginDto;
-import api.v1.travel_social_network_server.dto.auth.RegisterDto;
+import api.v1.travel_social_network_server.dtos.auth.LoginDto;
+import api.v1.travel_social_network_server.dtos.auth.RegisterDto;
 import api.v1.travel_social_network_server.reponses.Response;
 import api.v1.travel_social_network_server.reponses.auth.LoginResponse;
 import api.v1.travel_social_network_server.reponses.auth.RegisterResponse;

@@ -1,4 +1,4 @@
-package api.v1.travel_social_network_server.dto.user;
+package api.v1.travel_social_network_server.dtos.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

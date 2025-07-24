@@ -1,8 +1,8 @@
 package api.v1.travel_social_network_server.services;
 
 import api.v1.travel_social_network_server.components.JwtGenerator;
-import api.v1.travel_social_network_server.dto.auth.LoginDto;
-import api.v1.travel_social_network_server.dto.auth.RegisterDto;
+import api.v1.travel_social_network_server.dtos.auth.LoginDto;
+import api.v1.travel_social_network_server.dtos.auth.RegisterDto;
 import api.v1.travel_social_network_server.entities.User;
 import api.v1.travel_social_network_server.entities.UserProfile;
 import api.v1.travel_social_network_server.exceptions.ResourceAlreadyExistedException;
@@ -13,7 +13,6 @@ import api.v1.travel_social_network_server.responsitories.UserRepository;
 import api.v1.travel_social_network_server.utilities.GenderEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

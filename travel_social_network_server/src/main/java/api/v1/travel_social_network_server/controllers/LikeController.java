@@ -24,11 +24,11 @@ public class LikeController {
     @PutMapping("/like/{postId}")
     ResponseEntity<?> likePost(@PathVariable Long postId, @AuthenticationPrincipal User user) {
         try {
-            LikeResponse liked = likeService.likePost(postId, user);
+            LikeResponse isLiked = likeService.likePost(postId, user);
 
             return ResponseEntity.ok(Response.builder()
                     .status(StatusRequestEnum.SUCCESS)
-                    .data(liked)
+                    .data(isLiked)
                     .message("Updated Like successfully")
                     .build());
         } catch (Exception e) {

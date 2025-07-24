@@ -1,10 +1,12 @@
 package api.v1.travel_social_network_server.services;
 
-import api.v1.travel_social_network_server.dto.user.UpdateUserDto;
-import api.v1.travel_social_network_server.dto.user.UpdateUserImgDto;
+import api.v1.travel_social_network_server.dtos.user.UpdateUserDto;
+import api.v1.travel_social_network_server.dtos.user.UpdateUserImgDto;
 import api.v1.travel_social_network_server.entities.User;
 import api.v1.travel_social_network_server.entities.UserProfile;
 import api.v1.travel_social_network_server.exceptions.ResourceNotFoundException;
+import api.v1.travel_social_network_server.reponses.PageableResponse;
+import api.v1.travel_social_network_server.reponses.post.PostResponse;
 import api.v1.travel_social_network_server.reponses.user.UpdateUserResponse;
 import api.v1.travel_social_network_server.reponses.user.UserResponse;
 import api.v1.travel_social_network_server.responsitories.UserRepository;
@@ -12,12 +14,17 @@ import api.v1.travel_social_network_server.responsitories.UserRepository;
 import api.v1.travel_social_network_server.utilities.GenderEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -114,5 +121,29 @@ public class UserService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
+    public PageableResponse<UserResponse> searchUsersByKeyword(String keyword, int page, int pageSize) {
+        Pageable pageable = PageRequest.of(page, pageSize);
+        Page<User> userPage = userRepository.findByUserNameOrFullNameContainingIgnoreCase(keyword, pageable);
 
+        List<UserResponse> userResponses = userPage.getContent().stream()
+                .map(this::mapToUserResponse)
+                .toList();
+
+        return PageableResponse.<UserResponse>builder()
+                .content(userResponses)
+                .totalPages(userPage.getTotalPages())
+                .totalElements(userPage.getTotalElements())
+                .build();
+    }
+
+    private UserResponse mapToUserResponse(User user) {
+        return UserResponse.builder()
+                .userId(user.getUserId())
+                .userName(user.getUsername())
+                .avatarImg(user.getAvatarImg())
+                .coverImg(user.getCoverImg())
+                .userProfile(user.getUserProfile())
+                .build();
+    }
 }
